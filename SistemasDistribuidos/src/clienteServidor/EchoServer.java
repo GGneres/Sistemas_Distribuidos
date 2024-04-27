@@ -1,95 +1,132 @@
 package clienteServidor;
 
+import com.github.cliftonlabs.json_simple.JsonException;
+import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsoner;
+
 import java.net.*; 
 import java.io.*; 
 
 
 public class EchoServer extends Thread{
 	
-	 protected Socket clientSocket;
+	 private Socket clientSocket;
+	 private BufferedWriter fileWriter;
 
-	 public static void main(String[] args) throws IOException 
-	   { 
-	    ServerSocket serverSocket = null; 
-	    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-    	System.out.println("Qual porta devo iniciar?");
-		  br = new BufferedReader(new InputStreamReader(System.in));
-		  int serverP = Integer.parseInt(br.readLine());
-		 
-    	
-	    try { 
-	    	 serverSocket = new ServerSocket(serverP);
-	         System.out.println ("Connection Socket Created");
-	         try { 
-	              while (true)
-	                 {
-	            	  new EchoServer (serverSocket.accept());
-	                  System.out.println ("Waiting for Connection");
-	                  
-	                 }
-	             } 
-	         catch (IOException e) 
-	             { 
-	              System.err.println("Accept failed."); 
-	              System.exit(1); 
-	             } 
-	        } 
-	    catch (IOException e) 
-	        { 
-	         System.err.println("Could not listen on port: 10008."); 
-	         System.exit(1); 
-	        } 
-	    finally
-	        {
-	         try {
-	              serverSocket.close(); 
-	             }
-	         catch (IOException e)
-	             { 
-	              System.err.println("Could not close port: 10008."); 
-	              System.exit(1); 
-	             } 
+	 public EchoServer(Socket clientSoc, BufferedWriter writer) {
+		 clientSocket = clientSoc;
+		 fileWriter = writer;
+		 start();
+	 }	
+
+	    @Override
+	public void run() {
+	    	BufferedReader in = null;
+	    	PrintWriter out = null;
+
+	    	try {
+	    		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+	            out = new PrintWriter(clientSocket.getOutputStream(), true);
+
+	            boolean running = true;
+	            while (running) {
+	                String jsonMenssage = in.readLine();
+
+	                if (jsonMenssage != null && jsonMenssage.equalsIgnoreCase("sair")) {
+	                    running = false;
+	                    continue;
+	                }
+
+	                if (jsonMenssage != null) {
+
+	                    fileWriter.write(jsonMenssage);
+	                    fileWriter.newLine();
+	                    fileWriter.flush();
+
+	                    JsonObject jsonCreate = (JsonObject) Jsoner.deserialize(jsonMenssage);
+	                    String operation = (String) jsonCreate.get("operation");
+
+	                    if ("LOGIN_CANDIDATE".equals(operation)) {
+	                        JsonObject data = (JsonObject) jsonCreate.get("data");
+	                        String email = (String) data.get("email");
+	                        String password = (String) data.get("password");
+
+	                        if ("candidate@example.com".equals(email) && "password123".equals(password)) {
+	                            String token = "example_token";
+	                            StatusVerification successResponse = new StatusVerification(operation, "SUCCESS", token);
+	                            out.println(successResponse.toJsonString());
+	                        } else if ("candidate@example.com".equals(email)) {
+	                        	StatusVerification invalidPasswordResponse = new StatusVerification(operation, "INVALID_PASSWORD", "");
+	                            out.println(invalidPasswordResponse.toJsonString());
+	                        } else {
+	                        	StatusVerification userNotFoundResponse = new StatusVerification(operation, "USER_NOT_FOUND", "");
+	                            out.println(userNotFoundResponse.toJsonString());
+	                        }
+	                    }
+	                }
+	            }
+	        } catch (IOException | JsonException e) {
+	            System.err.println("Erro no servidor: " + e.getMessage());
+	        } finally {
+	            try {
+	                if (in != null) {
+	                    in.close();
+	                }
+	                if (out != null) {
+	                    out.close();
+	                }
+	                if (fileWriter != null) {
+	                    fileWriter.close();
+	                }
+	                if (clientSocket != null && !clientSocket.isClosed()) {
+	                    clientSocket.close();
+	                }
+	            } catch (IOException e) {
+	                System.err.println("Erro ao fechar recursos: " + e.getMessage());
+	            }
 	        }
-	   }
-
-	 private EchoServer (Socket clientSoc)
-	   {
-	    clientSocket = clientSoc;
-	    start();
-	   }
-
-	 @Override
-	public void run()
-	   {
-	    System.out.println ("New Communication Thread Started");
-
-	    try { 
-	         PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), 
-	                                      true); 
-	         BufferedReader in = new BufferedReader( 
-	                 new InputStreamReader( clientSocket.getInputStream())); 
-
-	         String inputLine; 
-
-	         while ((inputLine = in.readLine()) != null) 
-	             { 
-	        	 System.out.println("Cliente enviou: " + inputLine);
-	              System.out.println ("Server enviou: " + inputLine.toUpperCase()); 
-	              out.println(inputLine.toUpperCase()); 
-
-	              if (inputLine.toUpperCase().equals("Bye.")) 
-	                  break; 
-	             } 
-
-	         out.close(); 
-	         in.close(); 
-	         clientSocket.close(); 
-	        } 
-	    catch (IOException e) 
-	        { 
-	         System.err.println("Problem with Communication Server");
-	         System.exit(1); 
-	        } 
 	    }
 
+	    public static void main(String[] args) {
+	        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+
+	        int serverPort = 0;
+	        boolean validPort = false;
+
+	        while (!validPort) {
+	            try {
+	                System.out.println("Digite o número da porta para iniciar o servidor:");
+	                String portInput = reader.readLine();
+	                serverPort = Integer.parseInt(portInput);
+
+	                if (serverPort > 20000 && serverPort < 25000) {
+	                    validPort = true;
+	                } else {
+	                    System.out.println("Por favor, insira uma porta válida (20000 - 25000).");
+	                }
+	            } catch (NumberFormatException | IOException e) {
+	                System.out.println(e.getMessage());
+	            }
+	        }
+
+	        BufferedWriter fileWriter = null;
+
+	        try {
+	            fileWriter = new BufferedWriter(new FileWriter("server_log.txt", true));
+
+	            try (ServerSocket serverSocket = new ServerSocket(serverPort)) {
+	                System.out.println("Servidor iniciado na porta " + serverPort);
+
+	                while (true) {
+	                    System.out.println("Aguardando conexão...");
+	                    Socket clientSocket = serverSocket.accept();
+	                    System.out.println("Cliente conectado: " + clientSocket);
+
+	                    new EchoServer(clientSocket, fileWriter);
+	                }
+	            }
+	        } catch (IOException e) {
+	            System.err.println(e.getMessage());
+	        }
+	    }
 }

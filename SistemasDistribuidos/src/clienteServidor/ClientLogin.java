@@ -18,6 +18,7 @@ public class ClientLogin extends JFrame {
 	private JTextField textField;
 	private JTextField textField_1;
 	private JButton btnNewButton;
+	private int aux_PortNumber;
 
 	/**
 	 * Launch the application.
@@ -67,17 +68,63 @@ public class ClientLogin extends JFrame {
 		textField_1.setBounds(131, 124, 173, 29);
 		contentPane.add(textField_1);
 		
+		
 		btnNewButton = new JButton("Enviar");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("IP: " + textField.getText() + " Porta: " + textField_1.getText());
-				
-				System.exit(1);
+				//System.out.println("Porta: " + textField.getText() + " Ip: " + textField_1.getText());				
+				setVisible(false);
 			}
 		});
 		btnNewButton.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		btnNewButton.setBounds(166, 175, 105, 38);
 		contentPane.add(btnNewButton);
 		
+		//int PortNumber = Integer.parseInt(textField.getText());
+		//aux_PortNumber = PortNumber;
+		
 	}
+
+	public JTextField getTextField() {
+		return textField;
+	}
+
+	public void setTextField(JTextField textField) {
+		this.textField = textField;
+	}
+
+	public JTextField getTextField_1() {
+		return textField_1;
+	}
+
+	public void setTextField_1(JTextField textField_1) {
+		this.textField_1 = textField_1;
+	}
+	
+	public int getPortNumber() {
+		return aux_PortNumber;
+	}
+	
+	String auxiliar_ip;
+	public void setAuxiliar_IP(String auxiliar) {
+		this.auxiliar_ip = auxiliar;
+		return;
+	}
+	
+	int auxiliar_port;
+	public void setAuxiliar_Port(int auxiliar2) {
+		this.auxiliar_port = auxiliar2;
+		return;
+	}
+	
+	public String getAuxiliar_IP() {
+		return auxiliar_ip;
+	}
+	
+	public int getAuxiliar_Port() {
+		return auxiliar_port;
+	}
+	
+	
+	
 }
