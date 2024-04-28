@@ -9,6 +9,7 @@ public class EchoClient {
 	public int auxiliar_Port;
 	
 	public static void main(String[] args) throws IOException {
+		try {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 		
 		ClientLogin login = new ClientLogin();
@@ -30,26 +31,50 @@ public class EchoClient {
         
         //System.out.println("Qual a porta");
         //int serverPort = auxi_serverPort;
-		
-        System.out.println("Qual o email:");
-        String email = reader.readLine();
-
-        System.out.println("Qual a senha:");
-        String password = reader.readLine();
+ 
+        //CreateJson createJson = new CreateJson("LOGIN_CANDIDATE", email, password);
+        //String jsonInfo = createJson.toJsonString();
         
-        CreateJson createJson = new CreateJson("LOGIN_CANDIDATE", email, password);
-        String jsonInfo = createJson.toJsonString();
-        
-        try (Socket socket = new Socket(serverIp, 21234);
-                PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
+        Socket socket = new Socket(serverIp, 21234);
+        PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));         
+                
+         int switchCase = 0;       
+         while(switchCase != 5) {
+        	 System.out.println("----- Qual ação vai fazer? -----");
+        	 System.out.println("1 - Login");
+        	 System.out.println("2 - Resistrar-se");
+        	 System.out.println("3 - Editar dados");
+        	 System.out.println("4 - Excluir conta");
+        	 System.out.println("5 - Encerrar");
+        	 
+        	 int opcao;
+        	 opcao = Integer.parseInt(reader.readLine());
+        	 
+        	 switch(opcao) {
+        	 case 1:
+        		 //login
+        		 break;
+        	 case 2:
+        		 //registro
+        		 break;
+        	 case 3:
+        		 //editar
+        		 break;
+        	 case 4:
+        		 //excluir
+        		 break;
+        	 case 5:
+        		 //Encerrar
+        		 socket.close();
+        		 return;
+        	 default:
+        		 System.out.println("Opção não reconhecida, escolha uma opção válida!");
+        		 break;
+        	 }
+         }
 
-               out.println(jsonInfo);
-
-               String response = in.readLine();
-               System.out.println("Resposta do servidor: " + response);
-
-           } catch (IOException e) {
+	}catch (IOException e) {
                System.err.println(e.getMessage());
            }
         

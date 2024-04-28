@@ -1,2 +1,6 @@
 {"data":{"password":"123","email":"neres@neres"},"operation":"LOGIN_CANDIDATE"}
 {"data":{"password":"password123","email":"candidate@example.com"},"operation":"LOGIN_CANDIDATE"}
+{"data":{"password":"123","email":"neres@neres"},"operation":"LOGIN_CANDIDATE"}
+{"data":{"password":"123","email":"neres@neres"},"operation":"LOGIN_CANDIDATE"}
+{"data":{"password":"123","email":"neres@neres"},"operation":"LOGIN_CANDIDATE"}
+{"data":{"password":"123","email":"neres@neres"},"operation":"LOGIN_CANDIDATE"}
