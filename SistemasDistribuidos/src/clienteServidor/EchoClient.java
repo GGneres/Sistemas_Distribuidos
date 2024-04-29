@@ -53,10 +53,12 @@ public class EchoClient {
         	 
         	 switch(opcao) {
         	 case 1:
-        		 //login
+        		 CRUDClient loginClient = new CRUDClient();
+        		 loginClient.login(reader, out, in);
         		 break;
         	 case 2:
-        		 //registro
+        		 CRUDClient registrarClient = new CRUDClient();
+        		 registrarClient.registarCliente(reader, out, in);
         		 break;
         	 case 3:
         		 //editar
@@ -73,6 +75,7 @@ public class EchoClient {
         		 break;
         	 }
          }
+         socket.close();
 
 	}catch (IOException e) {
                System.err.println(e.getMessage());

@@ -1,5 +1,10 @@
 package clienteServidor;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.auth0.jwt.interfaces.JWTVerifier;
 import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
@@ -12,13 +17,37 @@ public class EchoServer extends Thread{
 	
 	 private Socket clientSocket;
 	 private BufferedWriter fileWriter;
+	 private static final String DATABASE_FILE = "user_database.txt";
 
 	 public EchoServer(Socket clientSoc, BufferedWriter writer) {
 		 clientSocket = clientSoc;
 		 fileWriter = writer;
 		 start();
 	 }	
-
+	 
+	 public class JWTValidator{
+		 private static final String TOKEN_KEY = "DISTRIBUIDOS";
+		 private static final Algorithm algorithm = Algorithm.HMAC256(TOKEN_KEY);
+		 private static final JWTVerifier verifier = JWT.require(algorithm).build();
+		 
+		 public static String generateToken(String id, String role) {
+			 return JWT.create()
+					 .withClaim("id", id)
+					 .withClaim("role", role)
+					 .sign(algorithm);
+		 }
+		 
+		 public static String getIdClaim(String token) throws JWTVerificationException{
+			 DecodedJWT jwt = verifier.verify(token);
+			 return jwt.getClaim("id").asString();
+		 }
+		 
+		 public static String getRoleClaim(String token) throws JWTVerificationException{
+			 DecodedJWT jwt = verifier.verify(token);
+			 return jwt.getClaim("role").asString();
+		 }
+	 }
+	 
 	    @Override
 	public void run() {
 	    	BufferedReader in = null;
@@ -46,22 +75,21 @@ public class EchoServer extends Thread{
 	                    JsonObject jsonCreate = (JsonObject) Jsoner.deserialize(jsonMenssage);
 	                    String operation = (String) jsonCreate.get("operation");
 
-	                    if ("LOGIN_CANDIDATE".equals(operation)) {
-	                        JsonObject data = (JsonObject) jsonCreate.get("data");
-	                        String email = (String) data.get("email");
-	                        String password = (String) data.get("password");
-
-	                        if ("candidate@example.com".equals(email) && "password123".equals(password)) {
-	                            String token = "example_token";
-	                            StatusVerification successResponse = new StatusVerification(operation, "SUCCESS", token);
-	                            out.println(successResponse.toJsonString());
-	                        } else if ("candidate@example.com".equals(email)) {
-	                        	StatusVerification invalidPasswordResponse = new StatusVerification(operation, "INVALID_PASSWORD", "");
-	                            out.println(invalidPasswordResponse.toJsonString());
-	                        } else {
-	                        	StatusVerification userNotFoundResponse = new StatusVerification(operation, "USER_NOT_FOUND", "");
-	                            out.println(userNotFoundResponse.toJsonString());
-	                        }
+	                    switch(operation) {
+	                    case "LOGIN_CANDIDATE":
+	                    	CRUDServer loginServer = new CRUDServer();
+	                    	loginServer.handleLogin(jsonCreate, out);
+	                    	break;
+	                    case "SIGNUP_CANDIDATE":
+	                    	CRUDServer RegistrarServer = new CRUDServer();
+	                    	RegistrarServer.handleRegistrar(jsonCreate, out);
+	                    	break;
+	                    case "UPDATE_ACCOUNT_CANDIDATE":
+	                    	//
+	                    	break;
+	                    case "DELETE_ACCOUNT_CANDIDATE":
+	                    	//
+	                    	break;
 	                    }
 	                }
 	            }
@@ -86,6 +114,7 @@ public class EchoServer extends Thread{
 	            }
 	        }
 	    }
+	    	    
 
 	    public static void main(String[] args) {
 	        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));

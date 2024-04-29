@@ -7,5 +7,9 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/Gabriel/git_faculdade/Sistemas_distribuidos/json-simple-4.0.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Gabriel/Downloads/versão 3/java-jwt-4.4.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Gabriel/Downloads/versão 3/jackson-databind-2.17.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Gabriel/Downloads/versão 3/jackson-core-2.17.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Gabriel/Downloads/versão 3/jackson-annotations-2.17.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

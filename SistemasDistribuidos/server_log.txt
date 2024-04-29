@@ -4,3 +4,38 @@
 {"data":{"password":"123","email":"neres@neres"},"operation":"LOGIN_CANDIDATE"}
 {"data":{"password":"123","email":"neres@neres"},"operation":"LOGIN_CANDIDATE"}
 {"data":{"password":"123","email":"neres@neres"},"operation":"LOGIN_CANDIDATE"}
+{"data":{"password":"123","email":"neres@galvan"},"operation":"LOGIN_CANDIDATE"}
+{data={password=123, email=neres@ners}, operation=LOGIN_CANDIDATE}
+{data={password=2, email=a@a}, operation=LOGIN_CANDIDATE}
+{data={password=2, email=a@a}, operation=LOGIN_CANDIDATE}
+{"data":{"password":"12","email":"a@a"},"operation":"LOGIN_CANDIDATE"}
+{"data":{"password":"12","name":"neres","email":"neres@neres"},"operation":"SIGNUP_CANDIDATE"}
+{"data":{"password":"22","name":"ner","email":"ner@ner"},"operation":"SIGNUP_CANDIDATE"}
+{"data":{"password":"2","name":"n","email":"n@n"},"operation":"SIGNUP_CANDIDATE"}
+{"data":{"password":"2","name":"c","email":"s@s"},"operation":"SIGNUP_CANDIDATE"}
+{"data":{"password":"2","email":"a@a"},"operation":"LOGIN_CANDIDATE"}
+{"data":{"password":"w","name":"a","email":"a"},"operation":"SIGNUP_CANDIDATE"}
+{"data":{"password":"2","name":"s","email":"a@a"},"operation":"SIGNUP_CANDIDATE"}
+{data={password=12, name=n, email=a@a}, operation=SIGNUP_CANDIDATE}
+{"data":{"password":"2","email":"a@a"},"operation":"LOGIN_CANDIDATE"}
+{"data":{"password":"12","email":"a@a"},"operation":"LOGIN_CANDIDATE"}
+{"data":{"password":"32","email":"a@a"},"operation":"LOGIN_CANDIDATE"}
+{data={password=1234, name=neres, email=ggneres@ggneres}, operation=SIGNUP_CANDIDATE}
+{data={password=12, name=ne, email=a@a}, operation=SIGNUP_CANDIDATE}
+{data={password=123, name=neres, email=b@b}, operation=SIGNUP_CANDIDATE}
+{data={password=1, name=n, email=a@a}, operation=SIGNUP_CANDIDATE}
+{data={password=12, name=a, email=a@a.com}, operation=SIGNUP_CANDIDATE}
+{"data":{"password":"12","email":"a@a"},"operation":"LOGIN_CANDIDATE"}
+{"data":{"password":"12","email":"a@a.com"},"operation":"LOGIN_CANDIDATE"}
+{"data":{"password":"12","email":"a@a.com"},"operation":"LOGIN_CANDIDATE"}
+{data={password=12, name=neres, email=a@a.com}, operation=SIGNUP_CANDIDATE}
+{data={password=12, name=neres, email=neres@neres}, operation=SIGNUP_CANDIDATE}
+{data={password=123, name=neres, email=neres@neres}, operation=SIGNUP_CANDIDATE}
+{"data":{"password":"2","email":"a@a.com"},"operation":"LOGIN_CANDIDATE"}
+{"data":{"password":"12","name":"neres","email":"a@a.com"},"operation":"SIGNUP_CANDIDATE"}
+{data={password=12, name=neres, email=a@a.com}, operation=SIGNUP_CANDIDATE}
+{"data":{"password":"123","name":"neres","email":"neres@neres.com"},"operation":"SIGNUP_CANDIDATE"}
+{"data":{"password":"123","email":"neres@neres.com"},"operation":"LOGIN_CANDIDATE"}
+{"data":{"password":"222","name":"fag","email":"fag@gfag.com"},"operation":"SIGNUP_CANDIDATE"}
+{"data":{"password":"222","email":"fag@fag.com"},"operation":"LOGIN_CANDIDATE"}
+{"data":{"password":"222","email":"fag@gfag.com"},"operation":"LOGIN_CANDIDATE"}
