@@ -3,14 +3,17 @@ package clienteServidor;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.rmi.server.Operation;
 
-
-
+import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
+import com.github.cliftonlabs.json_simple.Jsoner;
 
 public class CRUDClient {
 	
-	public void login(BufferedReader reader, PrintWriter out, BufferedReader in) throws IOException{
+	public static String token;
+	
+	public void login(BufferedReader reader, PrintWriter out, BufferedReader in) throws IOException, JsonException{
 		System.out.println("Insira o Email:");
 		String email = reader.readLine();
 		
@@ -23,8 +26,31 @@ public class CRUDClient {
 		//System.out.println("AQUI - " + jsonRequest);
 		
 		out.println(jsonRequest.toJson());
+		System.out.println("Enviado para o server: " + jsonRequest.toJson());
 		String response = in.readLine();
-		System.out.println("Resposta do servidor: " + response);	
+		System.out.println("Resposta do servidor: " + response);
+		
+		//String email = (String) data.get("email");
+		//JsonObject data = (JsonObject) jsonRequest.get("data");
+		
+		//JsonObject data = (JsonObject) jsonRequest.get("data");
+		//String email = (String) data.get("email");
+		
+		JsonObject jsonCreate = (JsonObject) Jsoner.deserialize(response);
+		JsonObject data = (JsonObject) jsonCreate.get("data");
+		token = (String) data.get("token");
+		
+		
+		//auxiliar.aux_setToken(token);
+		
+		//System.out.println("O TOKEN É - " + token);
+		
+		
+        //JsonObject jsonCreate = (JsonObject) Jsoner.deserialize(response);
+        //String operation = (String) jsonCreate.get("data");
+        //token = operation;
+        //System.out.println("O TOKEN É - " + operation);
+		
 	}
 	
 	public void registarCliente(BufferedReader reader, PrintWriter out, BufferedReader in) throws IOException{
@@ -55,10 +81,72 @@ public class CRUDClient {
 		
 		
 		out.println(jsonRequest.toJson());
+		System.out.println("Enviado para o server: " + jsonRequest.toJson());
 		String response = in.readLine();
 		//System.out.println("AQUI - " + jsonRequest);
 		System.out.println(response);
 		
+		
+	}
+	
+	public void logoutCliente(BufferedReader in, PrintWriter out) throws IOException{
+		if(token == null || token.isEmpty()) {
+			System.out.println("Faça o login antes!");
+			return;
+		}
+		
+		JsonObject jsonRequest = CreateJson.createRequest("LOGOUT_CANDIDATE");
+		jsonRequest.put("token", token);
+		JsonObject data = new JsonObject();
+		jsonRequest.put("data", data);
+		
+		
+		CreateJson.sendRequestLogout(jsonRequest, out);
+		
+		System.out.println("Enviado para o servidor - " + jsonRequest);
+		
+		
+		String jsonResponse = in.readLine();
+		//jsonResponse.to
+		
+		
+		System.out.println(jsonResponse);
+	}
+	
+	public void verificarDadosClient(BufferedReader in, PrintWriter out) throws IOException {
+		if(token == null || token.isEmpty()) {
+			System.out.println("Faça o login antes!");
+			return;
+		}
+		
+		JsonObject jsonRequest = CreateJson.createRequest("LOOKUP_ACCOUNT_CANDIDATE");
+		jsonRequest.put("token", token);
+		JsonObject data = new JsonObject();
+		jsonRequest.put("data", data);
+		
+		CreateJson.sendRequestLogout(jsonRequest, out);
+		
+		System.out.println("Enviado para o cliente: " + jsonRequest);
+		String responseJson = in.readLine();
+		System.out.println(responseJson);
+		
+	}
+	
+	public void deleteClient(BufferedReader reader, PrintWriter out, BufferedReader in) throws IOException{
+		if(token == null || token.isEmpty()) {
+			System.out.println("Faça o login antes!");
+			return;
+		}
+		
+		JsonObject jsonRequest = CreateJson.createRequest("DELETE_ACCOUNT_CANDIDATE");
+		jsonRequest.put("token", token);
+		JsonObject data = new JsonObject();
+		jsonRequest.put("data", data);
+		
+		System.out.println("Enviado para o servidor: " + jsonRequest);
+		
+		String responseJson = CreateJson.sendRequest(jsonRequest, out, in);
+		System.out.println(responseJson);
 	}
 
 

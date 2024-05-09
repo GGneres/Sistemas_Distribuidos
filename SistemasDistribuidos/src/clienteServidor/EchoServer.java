@@ -30,16 +30,16 @@ public class EchoServer extends Thread{
 		 private static final Algorithm algorithm = Algorithm.HMAC256(TOKEN_KEY);
 		 private static final JWTVerifier verifier = JWT.require(algorithm).build();
 		 
-		 public static String generateToken(String id, String role) {
+		 public static String generateToken(int id, String role) {
 			 return JWT.create()
 					 .withClaim("id", id)
 					 .withClaim("role", role)
 					 .sign(algorithm);
 		 }
 		 
-		 public static String getIdClaim(String token) throws JWTVerificationException{
+		 public static int getIdClaim(String token) throws JWTVerificationException{
 			 DecodedJWT jwt = verifier.verify(token);
-			 return jwt.getClaim("id").asString();
+			 return jwt.getClaim("id").asInt();
 		 }
 		 
 		 public static String getRoleClaim(String token) throws JWTVerificationException{
@@ -88,8 +88,19 @@ public class EchoServer extends Thread{
 	                    	//
 	                    	break;
 	                    case "DELETE_ACCOUNT_CANDIDATE":
-	                    	//
+	                    	System.out.println("AQUI");
+	                    	CRUDServer deletarServer = new CRUDServer();
+	                    	
+	                    	deletarServer.deletarServer(jsonCreate, out);
 	                    	break;
+	                    case "LOGOUT_CANDIDATE":
+	                    	//System.out.println("RECEBEMO LOGOUT");
+	                    	CRUDServer logoutServer = new CRUDServer();
+	                    	logoutServer.logout(jsonCreate ,out);
+	                    	break;
+	                    case "LOOKUP_ACCOUNT_CANDIDATE":
+	                    	CRUDServer verificarDadosServer = new CRUDServer();
+	                    	verificarDadosServer.verificarDadosServer(jsonCreate, out);
 	                    }
 	                }
 	            }
@@ -143,6 +154,7 @@ public class EchoServer extends Thread{
 	        try {
 	            fileWriter = new BufferedWriter(new FileWriter("server_log.txt", true));
 
+	            
 	            try (ServerSocket serverSocket = new ServerSocket(serverPort)) {
 	                System.out.println("Servidor iniciado na porta " + serverPort);
 
@@ -152,6 +164,7 @@ public class EchoServer extends Thread{
 	                    System.out.println("Cliente conectado: " + clientSocket);
 
 	                    new EchoServer(clientSocket, fileWriter);
+
 	                }
 	            }
 	        } catch (IOException e) {

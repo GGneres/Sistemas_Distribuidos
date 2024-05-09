@@ -47,6 +47,7 @@ public class CreateJson {
 		 }
 	 
 	 public JsonObject functRegistroClient(String operation, String email, String password, String name) {
+
 	       JsonObject jsonObject = new JsonObject();
 	       jsonObject.put("operation", operation);
 	       JsonObject dataObject = new JsonObject();
@@ -58,28 +59,52 @@ public class CreateJson {
 		 }
 	 
 	 public static String sendRequest(JsonObject requestJson, PrintWriter out, BufferedReader in) throws IOException{
-		 out.println(requestJson.toString());
+
+		 out.println(requestJson.toJson());
 		 return in.readLine();
 	 }
 	 
+	 public static String sendRequest(JsonObject requestJson, PrintWriter out) throws IOException{
+		 out.println(requestJson.toString());
+		 return null;
+	 }
+	 
+	 public static String sendRequestLogout(JsonObject requestJson, PrintWriter out) throws IOException{
+		 out.println(requestJson.toJson());
+		 return null;
+	 }
+	 
 	 public static JsonObject createRequest(String operation) {
+
 		 JsonObject requestJson = new JsonObject();
 		 requestJson.put("operation", operation);
 		 return requestJson;
 	 }
 	 
+	 
 	 public static JsonObject createResponse(String operation, String status, String token) {
+
 		 JsonObject responseJson = new JsonObject();
-		 responseJson.put("token", token);
 		 responseJson.put("operation", operation);
 		 responseJson.put("status", status);
 		 JsonObject dataObject = new JsonObject();
+		 dataObject.put("token", token);
 		 responseJson.put("data", dataObject);
 		 return responseJson;
+	 }
+	 
+	 public static JsonObject createResponse(String operation, String status, JsonObject dataResponse) {
+
+		 JsonObject jsonResponse = new JsonObject();
+		 jsonResponse.put("operation", operation);
+		 jsonResponse.put("status", status);
+		 jsonResponse.put("data", dataResponse);
+		 return jsonResponse;
 	 }
 	 
 	 public static String toJsonString(JsonObject jsonObject) {
 		 return jsonObject.toJson();
 	 }
+	 
 
 }
