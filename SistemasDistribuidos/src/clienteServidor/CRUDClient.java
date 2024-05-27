@@ -109,7 +109,7 @@ public class CRUDClient {
 		String jsonResponse = in.readLine();
 		//jsonResponse.to
 		
-		
+		token = "";
 		System.out.println(jsonResponse);
 	}
 	
@@ -145,7 +145,9 @@ public class CRUDClient {
 		
 		System.out.println("Enviado para o servidor: " + jsonRequest);
 		
+		
 		String responseJson = CreateJson.sendRequest(jsonRequest, out, in);
+		token = "";
 		System.out.println(responseJson);
 	}
 

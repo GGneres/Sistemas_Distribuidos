@@ -173,7 +173,14 @@ public class CRUDServer{
 					jsonResponse.put("token", dataResponse);
 					System.out.println("Enviado para o cliente: " + jsonResponse);
 					out.println(CreateJson.toJsonString(jsonResponse));
+					
+					//List<Person> persons = readPersonDatabase();
+					
+					 //auxiRequest = logout(jsonRequest, out);
+					
 					return;
+					
+                	
 				}
 			}
 		} catch (JWTVerificationException e) {

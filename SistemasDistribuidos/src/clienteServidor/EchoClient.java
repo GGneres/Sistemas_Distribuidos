@@ -36,10 +36,13 @@ public class EchoClient {
  
         //CreateJson createJson = new CreateJson("LOGIN_CANDIDATE", email, password);
         //String jsonInfo = createJson.toJsonString();
+		
+		
         
         Socket socket = new Socket(serverIp, 21234);
         PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
-        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));         
+        BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));     
+        
                 
          int switchCase = 0;       
          while(switchCase != 6) {
