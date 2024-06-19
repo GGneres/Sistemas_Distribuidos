@@ -1,0 +1,10 @@
+NodeJs
+JavaScript
+Java
+C
+HTML
+CSS
+React
+ReactNative
+TypeScript
+Ruby

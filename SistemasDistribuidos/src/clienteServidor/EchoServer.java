@@ -9,7 +9,10 @@ import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
 import com.github.cliftonlabs.json_simple.Jsoner;
 
-import java.net.*; 
+import java.net.*;
+
+import org.xml.sax.helpers.ParserAdapter;
+
 import java.io.*; 
 
 
@@ -49,64 +52,161 @@ public class EchoServer extends Thread{
 	 }
 	 
 	    @Override
-	public void run() {
-	    	BufferedReader in = null;
-	    	PrintWriter out = null;
+	    public void run() {
+	        BufferedReader in = null;
+	        PrintWriter out = null;
 
-	    	try {
-	    		in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+	        try {
+	            in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 	            out = new PrintWriter(clientSocket.getOutputStream(), true);
 
 	            boolean running = true;
 	            while (running) {
-	                String jsonMenssage = in.readLine();
+	                String jsonMenssage = null;
 
-	                if (jsonMenssage != null && jsonMenssage.equalsIgnoreCase("sair")) {
+	                try {
+	                    jsonMenssage = in.readLine();
+	                } catch (SocketTimeoutException e) {
+	                    System.out.println("Tempo limite de leitura do socket atingido, desconectando cliente: " + clientSocket);
+	                    break;
+	                } catch (SocketException e) {
+	                    System.out.println("Conexão resetada pelo cliente: " + clientSocket);
+	                    break;
+	                } catch (IOException e) {
+	                    System.out.println("Erro de IO na leitura do socket: " + e.getMessage());
+	                    break;
+	                }
+
+	                // Handle client disconnection
+	                if (jsonMenssage == null) {
+	                    System.out.println("Cliente desconectado: " + clientSocket);
+	                    break;
+	                }
+
+	                if (jsonMenssage.equalsIgnoreCase("sair")) {
 	                    running = false;
 	                    continue;
 	                }
 
-	                if (jsonMenssage != null) {
+	                fileWriter.write(jsonMenssage);
+	                fileWriter.newLine();
+	                fileWriter.flush();
 
-	                    fileWriter.write(jsonMenssage);
-	                    fileWriter.newLine();
-	                    fileWriter.flush();
-
+	                try {
 	                    JsonObject jsonCreate = (JsonObject) Jsoner.deserialize(jsonMenssage);
 	                    String operation = (String) jsonCreate.get("operation");
+	                    System.out.println("--------------------------------------------------------------------------------------------");
 
-	                    switch(operation) {
-	                    case "LOGIN_CANDIDATE":
-	                    	CRUDServer loginServer = new CRUDServer();
-	                    	loginServer.handleLogin(jsonCreate, out);
-	                    	break;
-	                    case "SIGNUP_CANDIDATE":
-	                    	CRUDServer RegistrarServer = new CRUDServer();
-	                    	RegistrarServer.handleRegistrar(jsonCreate, out);
-	                    	break;
-	                    case "UPDATE_ACCOUNT_CANDIDATE":
-	                    	//
-	                    	break;
-	                    case "DELETE_ACCOUNT_CANDIDATE":
-	                    	System.out.println("AQUI");
-	                    	CRUDServer deletarServer = new CRUDServer();
-	                    	
-	                    	deletarServer.deletarServer(jsonCreate, out);
-	                    	break;
-	                    case "LOGOUT_CANDIDATE":
-	                    	//System.out.println("RECEBEMO LOGOUT");
-	                    	CRUDServer logoutServer = new CRUDServer();
-	                    	logoutServer.logout(jsonCreate ,out);
-	                    	break;
-	                    case "LOOKUP_ACCOUNT_CANDIDATE":
-	                    	CRUDServer verificarDadosServer = new CRUDServer();
-	                    	verificarDadosServer.verificarDadosServer(jsonCreate, out);
+	                    switch (operation) {
+	                        case "LOGIN_CANDIDATE":
+	                            CRUDServer loginServer = new CRUDServer();
+	                            loginServer.handleLogin(jsonCreate, out);
+	                            break;
+	                        case "SIGNUP_CANDIDATE":
+	                            CRUDServer RegistrarServer = new CRUDServer();
+	                            RegistrarServer.handleRegistrar(jsonCreate, out);
+	                            break;
+	                        case "UPDATE_ACCOUNT_CANDIDATE":
+	                            CRUDServer atualizarServer = new CRUDServer();
+	                            atualizarServer.atualizarContaServer(jsonCreate, out);
+	                            break;
+	                        case "DELETE_ACCOUNT_CANDIDATE":
+	                            CRUDServer deletarServer = new CRUDServer();
+	                            deletarServer.deletarServer(jsonCreate, out);
+	                            break;
+	                        case "LOGOUT_CANDIDATE":
+	                            CRUDServer logoutServer = new CRUDServer();
+	                            logoutServer.logout(jsonCreate, out);
+	                            break;
+	                        case "LOOKUP_ACCOUNT_CANDIDATE":
+	                            CRUDServer verificarDadosServer = new CRUDServer();
+	                            verificarDadosServer.verificarDadosServer(jsonCreate, out);
+	                            break;
+	                        case "LOGIN_RECRUITER":
+	                            CRUDServerEmpresa loginServerEmpresa = new CRUDServerEmpresa();
+	                            loginServerEmpresa.handleLogin(jsonCreate, out);
+	                            break;
+	                        case "SIGNUP_RECRUITER":
+	                            CRUDServerEmpresa RegistrarServerEmpresa = new CRUDServerEmpresa();
+	                            RegistrarServerEmpresa.handleRegistrar(jsonCreate, out);
+	                            break;
+	                        case "UPDATE_ACCOUNT_RECRUITER":
+	                            CRUDServerEmpresa atualizarServerEmpresa = new CRUDServerEmpresa();
+	                            atualizarServerEmpresa.atualizarContaServer(jsonCreate, out);
+	                            break;
+	                        case "DELETE_ACCOUNT_RECRUITER":
+	                            CRUDServerEmpresa deletarDadosEmpresa = new CRUDServerEmpresa();
+	                            deletarDadosEmpresa.deletarEmpresa(jsonCreate, out);
+	                            break;
+	                        case "LOGOUT_RECRUITER":
+	                            CRUDServerEmpresa logoutServerEmpresa = new CRUDServerEmpresa();
+	                            logoutServerEmpresa.logout(jsonCreate, out);
+	                            break;
+	                        case "LOOKUP_ACCOUNT_RECRUITER":
+	                            CRUDServerEmpresa verificarDadosEmpresa = new CRUDServerEmpresa();
+	                            verificarDadosEmpresa.verificarDadosServer(jsonCreate, out);
+	                            break;
+	                        case "INCLUDE_SKILL":
+	                            CRUDCompetenciasServidor adicionarSkillCandidate = new CRUDCompetenciasServidor();
+	                            adicionarSkillCandidate.IncludeSkill(jsonCreate, out);
+	                            break;
+	                        case "LOOKUP_SKILL":
+	                            CRUDCompetenciasServidor verificarSkillCandidate = new CRUDCompetenciasServidor();
+	                            verificarSkillCandidate.LookupSkill(jsonCreate, out);
+	                            break;
+	                        case "LOOKUP_SKILLSET":
+	                            CRUDCompetenciasServidor verifciarListaSkillCandidate = new CRUDCompetenciasServidor();
+	                            verifciarListaSkillCandidate.lookupSkillSet(jsonCreate, out);
+	                            break;
+	                        case "DELETE_SKILL":
+	                            CRUDCompetenciasServidor deletarSkillCandidate = new CRUDCompetenciasServidor();
+	                            deletarSkillCandidate.deleteSkillCandidate(jsonCreate, out);
+	                            break;
+	                        case "UPDATE_SKILL":
+	                            CRUDCompetenciasServidor updateSkillCandidate = new CRUDCompetenciasServidor();
+	                            updateSkillCandidate.updateSkillCandidate(jsonCreate, out);
+	                            break;
+	                        case "INCLUDE_JOB":
+	                            CRUDVagasServidor includeJobEmpresa = new CRUDVagasServidor();
+	                            includeJobEmpresa.IncludeJob(jsonCreate, out);
+	                            break;
+	                        case "LOOKUP_JOB":
+	                            CRUDVagasServidor lookupJobEmpresa = new CRUDVagasServidor();
+	                            lookupJobEmpresa.LookupJob(jsonCreate, out);
+	                            break;
+	                        case "LOOKUP_JOBSET":
+	                            CRUDVagasServidor lookupJobSetEmpresa = new CRUDVagasServidor();
+	                            lookupJobSetEmpresa.lookupJobSet(jsonCreate, out);
+	                            break;
+	                        case "UPDATE_JOB":
+	                            CRUDVagasServidor updateJobEmpresa = new CRUDVagasServidor();
+	                            updateJobEmpresa.updateJobCandidate(jsonCreate, out);
+	                            break;
+	                        case "DELETE_JOB":
+	                            CRUDVagasServidor deleteJobEmpresa = new CRUDVagasServidor();
+	                            deleteJobEmpresa.deleteJobCandidate(jsonCreate, out);
+	                            break;
+	                        case "SEARCH_JOB":
+	                            SearchJobServer searchJobServer = new SearchJobServer();
+	                            searchJobServer.SearchJobSet(jsonCreate, out);
+	                            break;
+	                        case "NAO_EXISTE":
+	                            System.out.println("Recebido do cliente: " + jsonCreate.get("operation"));
+	                            JsonObject jsonResponse = CreateJson.createResponse("NAO_EXISTE", "INVALID_OPERATION", "");
+	                            System.out.println("Mandando para o cliente: " + jsonResponse);
+	                            out.println(CreateJson.toJsonString(jsonResponse));
+	                            break;
 	                    }
+	                } catch (JsonException e) {
+	                    System.err.println("Erro ao desserializar mensagem JSON: " + e.getMessage());
 	                }
 	            }
-	        } catch (IOException | JsonException e) {
+	        } catch (SocketException e) {
+	            System.out.println("Conexão resetada ou encerrada pelo cliente: " + e.getMessage());
+	        } catch (IOException e) {
 	            System.err.println("Erro no servidor: " + e.getMessage());
 	        } finally {
+	            // Mova o fechamento dos recursos para dentro do finally para garantir que sejam fechados corretamente
 	            try {
 	                if (in != null) {
 	                    in.close();
@@ -114,9 +214,7 @@ public class EchoServer extends Thread{
 	                if (out != null) {
 	                    out.close();
 	                }
-	                if (fileWriter != null) {
-	                    fileWriter.close();
-	                }
+	                // Não feche fileWriter aqui se ele estiver sendo compartilhado entre várias threads
 	                if (clientSocket != null && !clientSocket.isClosed()) {
 	                    clientSocket.close();
 	                }
@@ -125,6 +223,7 @@ public class EchoServer extends Thread{
 	            }
 	        }
 	    }
+
 	    	    
 
 	    public static void main(String[] args) {
@@ -159,12 +258,13 @@ public class EchoServer extends Thread{
 	                System.out.println("Servidor iniciado na porta " + serverPort);
 
 	                while (true) {
+	                	
+	                	
 	                    System.out.println("Aguardando conexão...");
 	                    Socket clientSocket = serverSocket.accept();
 	                    System.out.println("Cliente conectado: " + clientSocket);
-
-	                    new EchoServer(clientSocket, fileWriter);
-
+	                    new EchoServer(clientSocket, fileWriter);     
+	                    
 	                }
 	            }
 	        } catch (IOException e) {

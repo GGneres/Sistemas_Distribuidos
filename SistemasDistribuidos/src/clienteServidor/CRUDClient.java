@@ -3,7 +3,6 @@ package clienteServidor;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.rmi.server.Operation;
 
 import com.github.cliftonlabs.json_simple.JsonException;
 import com.github.cliftonlabs.json_simple.JsonObject;
@@ -13,12 +12,27 @@ public class CRUDClient {
 	
 	public static String token;
 	
-	public void login(BufferedReader reader, PrintWriter out, BufferedReader in) throws IOException, JsonException{
-		System.out.println("Insira o Email:");
+	public void loginClient(BufferedReader reader, PrintWriter out, BufferedReader in) throws IOException, JsonException{
+		
+		/*System.out.println("Insira o Email:");
 		String email = reader.readLine();
 		
 		System.out.println("Insira a Senha:");
-		String password = reader.readLine();
+		String password = reader.readLine();*/
+		
+		String email = null, password = null;
+		TelaLoginUsuario telaLoginUsuario = new TelaLoginUsuario();
+		
+		
+		telaLoginUsuario.setVisible(true);
+		
+		
+		while(telaLoginUsuario.isVisible()) {
+			email = telaLoginUsuario.getTextField().getText();
+			password = telaLoginUsuario.getTextField_1().getText();
+		}
+		
+		
 		
 		CreateJson JsonObject = new CreateJson("LOGIN_CANDIDATE", email, password);
 		JsonObject jsonRequest = JsonObject.functLoginClient();	
@@ -126,7 +140,7 @@ public class CRUDClient {
 		
 		CreateJson.sendRequestLogout(jsonRequest, out);
 		
-		System.out.println("Enviado para o cliente: " + jsonRequest);
+		System.out.println("Enviado para o servidor: " + jsonRequest);
 		String responseJson = in.readLine();
 		System.out.println(responseJson);
 		
@@ -149,7 +163,43 @@ public class CRUDClient {
 		String responseJson = CreateJson.sendRequest(jsonRequest, out, in);
 		token = "";
 		System.out.println(responseJson);
+		
+		//logoutCliente(in, out);
 	}
+	
+	public void atualizarClient(BufferedReader reader, PrintWriter out, BufferedReader in) throws IOException{
+		if(token == null || token.isEmpty()) {
+			System.out.println("Faça o login antes!");
+			return;
+		}
+		
+		System.out.println("novo email:");
+		String novoEmail = reader.readLine();
+		
+		System.out.println("nova senha:");
+		String novaSenha = reader.readLine();
+		
+		System.out.println("novo nome:");
+		String novoNome = reader.readLine();
+		
+		JsonObject jsonRequest = CreateJson.createRequest("UPDATE_ACCOUNT_CANDIDATE");
+		JsonObject data = new JsonObject();
+		data.put("email", novoEmail);
+		data.put("password", novaSenha);
+		data.put("name", novoNome);
+		jsonRequest.put("token", token);
+		jsonRequest.put("data", data);
+		
+		System.out.println("Enviado para o cliente: " + jsonRequest);
+		String responseJson = CreateJson.sendRequest(jsonRequest, out, in);
+		System.out.println(responseJson);
+	}
+
+	public String getToken() {
+		return token;
+	}
+	
+	
 
 
 }

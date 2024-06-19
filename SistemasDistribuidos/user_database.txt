@@ -1,1 +1,8 @@
-tr@tr.com,12,tr,1
+juca@juca.com,juca,juca,1
+z@z.com,z,z,2
+a@a.com,12,a,3
+juca!@juca.com,juca,juca,4
+lana@vida,1,Lana,5
+teste,teste,teste,6
+kaster@g.com,kaster,kaster,7
+hans@hans.com,senha,hans,8
