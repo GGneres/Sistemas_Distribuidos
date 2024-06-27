@@ -1,10 +1,8 @@
 package clienteServidor;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -16,53 +14,54 @@ import com.github.cliftonlabs.json_simple.JsonObject;
 
 import clienteServidor.EchoServer.JWTValidator;
 
-public class SearchJobServer {
-	
+public class SearchProfileServidor {
+
 	private static final String DATABASE_FILE = "user_database.txt";
 	private static final String DATABASE_FILE_JOB_CANIDATE = "jobCandidate_database.txt";
 	private static final String DATABASE_FILE_DATA_SET = "skillDataSet.txt";
 	private static final String DATABASE_FILE_SKILL_CANIDATE = "skillCandidate_database.txt";
 	private static final String DATABASE_FILE_RECRUITER = "recruiter_database.txt";
 	
-	public void SearchJobSet(JsonObject jsonRequest, PrintWriter out) throws IOException{
+	public void SearchProfile(JsonObject jsonRequest, PrintWriter out) throws IOException{
 		System.out.println("Recebido cliente: " + jsonRequest);
 		String token = (String) jsonRequest.get("token");
 		
 		try {
 			int personId = JWTValidator.getIdClaim(token);
-			List<Person> listOfPersons = readPersonDatabase();
+			List<Recruiter> listOfPersons = readRecruiterDatabase();
 			if(!listOfPersons.stream().anyMatch(person -> person.getId() == personId)) {
-				JsonObject jsonResponse = CreateJson.createResponse("SEARCH_JOB","INVALID_TOKEN","");
+				JsonObject jsonResponse = CreateJson.createResponse("SEARCH_CANDIDATE","INVALID_TOKEN","");
 				System.out.println("Enviado para o cliente: " + jsonResponse);
 				out.println(CreateJson.toJsonString(jsonResponse));
 				return;
+				
 				} 
 			
 			JsonObject data = (JsonObject) jsonRequest.get("data");
-			List<JobCandidate> listOfJobCandidates = readJobCandidateDatabase();
+			List<SkillCandidate> listOfSkillCandidates = readSkillCandidateDatabase();
 			List<JsonObject> resultsSkillsCandidates = new ArrayList<>();
 			
 			
 			if(data.containsKey("experience") && !data.containsKey("skill")) {
 				String experience = (String) data.get("experience");
-				for(JobCandidate jobCandidate : listOfJobCandidates) {
-						String auxJobExperience = jobCandidate.getExperience();
+				for(SkillCandidate skillCandidate : listOfSkillCandidates) {
+						String auxJobExperience = skillCandidate.getExperience();
 						Integer auxJobExperience2 = Integer.parseInt(auxJobExperience);
 						Integer auxJobExperience3 = Integer.parseInt(experience);
-						if(auxJobExperience2 <= auxJobExperience3){
-							if(jobCandidate.getSearchable().equals("YES")) {						
-								JsonObject dataRegistro = new JsonObject();
-								dataRegistro.put("skill", jobCandidate.getSkill());
-								dataRegistro.put("experience", jobCandidate.getExperience());
-								dataRegistro.put("available", jobCandidate.getAvailable());
-								
-								Integer auxSkillset_size = jobCandidate.getId();
-								
-								dataRegistro.put("id", auxSkillset_size.toString());
-								
-								resultsSkillsCandidates.add(dataRegistro);
+						if(auxJobExperience2 <= auxJobExperience3){	
+							JsonObject dataRegistro = new JsonObject();
+							dataRegistro.put("skill", skillCandidate.getSkill());
+							dataRegistro.put("experience", skillCandidate.getExperience());
+							
+							
+							Integer auxSkillset_size = skillCandidate.getId();
+							Integer auxSkillsetperson_size = skillCandidate.getPersonId();
+							
+							dataRegistro.put("id", auxSkillset_size.toString());
+							dataRegistro.put("id_user", auxSkillsetperson_size.toString());
+							
+							resultsSkillsCandidates.add(dataRegistro);
 								//return;
-							}
 							
 							
 						}
@@ -81,8 +80,8 @@ public class SearchJobServer {
 		        
 		        
 		        JsonObject dataRegistroAux = new JsonObject();
-		        dataRegistroAux.put("jobset_size", Skillset_size);
-		        dataRegistroAux.put("jobset", dataArray);
+		        dataRegistroAux.put("profile_size", Skillset_size);
+		        dataRegistroAux.put("profile", dataArray);
 		        jsonResponse.put("data", dataRegistroAux);
 		        
 		        System.out.println("Enviado para o cliente: " + jsonResponse);
@@ -94,25 +93,26 @@ public class SearchJobServer {
 			if(data.containsKey("skill") && !data.containsKey("experience")) {
 				JsonArray skillList = (JsonArray) data.get("skill");
 
-				for(JobCandidate jobCandidate : listOfJobCandidates) {
-					String skill = (String) jobCandidate.getSkill();
+				for(SkillCandidate skillCandidate : listOfSkillCandidates) {
+					String skill = (String) skillCandidate.getSkill();
 					for(Object Auxskill : skillList) {
 						String auxSkillString = Auxskill.toString();
 						String skillValue = auxSkillString.replaceAll("\\{skill=", "").replaceAll("\\}", "");
-						if(skillValue.equals(skill)){	
-							if(jobCandidate.getSearchable().equals("YES")) {
-								JsonObject dataRegistro = new JsonObject();
-								dataRegistro.put("skill", jobCandidate.getSkill());
-								dataRegistro.put("experience", jobCandidate.getExperience());
-								dataRegistro.put("available", jobCandidate.getAvailable());
-								
-								Integer auxSkillset_size = jobCandidate.getId();
-								
-								dataRegistro.put("id", auxSkillset_size.toString());
-								
-								resultsSkillsCandidates.add(dataRegistro);
+						if(skillValue.equals(skill)){
+												
+							JsonObject dataRegistro = new JsonObject();
+							dataRegistro.put("skill", skillCandidate.getSkill());
+							dataRegistro.put("experience", skillCandidate.getExperience());
+							
+							
+							Integer auxSkillset_size = skillCandidate.getId();
+							Integer auxSkillsetperson_size = skillCandidate.getPersonId();
+							
+							dataRegistro.put("id", auxSkillset_size.toString());
+							dataRegistro.put("id_user", auxSkillsetperson_size.toString());
+							
+							resultsSkillsCandidates.add(dataRegistro);
 								//return;
-							}
 							
 							
 						}
@@ -132,8 +132,8 @@ public class SearchJobServer {
 		        
 		        
 		        JsonObject dataRegistroAux = new JsonObject();
-		        dataRegistroAux.put("jobset_size", Skillset_size);
-		        dataRegistroAux.put("jobset", dataArray);
+		        dataRegistroAux.put("profile_size", Skillset_size);
+		        dataRegistroAux.put("profile", dataArray);
 		        jsonResponse.put("data", dataRegistroAux);
 		        
 		        System.out.println("Enviado para o cliente: " + jsonResponse);
@@ -157,28 +157,32 @@ public class SearchJobServer {
 					JsonArray skillList = (JsonArray) data.get("skill");
 					String experience = (String) data.get("experience");
 					
-					for(JobCandidate jobCandidate : listOfJobCandidates) {
-						String skill = (String) jobCandidate.getSkill();
+					for(SkillCandidate skillCandidate : listOfSkillCandidates) {
+						String skill = (String) skillCandidate.getSkill();
 						for(Object Auxskill : skillList) {
 							String auxSkillString = Auxskill.toString();
 							String skillValue = auxSkillString.replaceAll("\\{skill=", "").replaceAll("\\}", "");
-							String auxJobExperience = jobCandidate.getExperience();
+							String auxJobExperience = skillCandidate.getExperience();
 							Integer auxJobExperience2 = Integer.parseInt(auxJobExperience);
 							Integer auxJobExperience3 = Integer.parseInt(experience);
 							if(skillValue.equals(skill) && auxJobExperience2 <= auxJobExperience3){
-								if(jobCandidate.getSearchable().equals("YES")) {									
-									JsonObject dataRegistro = new JsonObject();
-									dataRegistro.put("skill", jobCandidate.getSkill());
-									dataRegistro.put("experience", jobCandidate.getExperience());
-									dataRegistro.put("available", jobCandidate.getAvailable());
+								
+								
+								JsonObject dataRegistro = new JsonObject();
+								dataRegistro.put("skill", skillCandidate.getSkill());
+								dataRegistro.put("experience", skillCandidate.getExperience());
+								
+								
+								Integer auxSkillset_size = skillCandidate.getId();
+								Integer auxSkillsetperson_size = skillCandidate.getPersonId();
+								
+								dataRegistro.put("id", auxSkillset_size.toString());
+								dataRegistro.put("id_user", auxSkillsetperson_size.toString());
+								
+								resultsSkillsCandidates.add(dataRegistro);
+									//return;
 									
-									Integer auxSkillset_size = jobCandidate.getId();
-									
-									dataRegistro.put("id", auxSkillset_size.toString());
-									
-									resultsSkillsCandidates.add(dataRegistro);
-									//return;	
-								}
+								
 								
 							}
 						}
@@ -197,8 +201,8 @@ public class SearchJobServer {
 					
 					
 					JsonObject dataRegistroAux = new JsonObject();
-					dataRegistroAux.put("jobset_size", Skillset_size);
-					dataRegistroAux.put("jobset", dataArray);
+					dataRegistroAux.put("profile_size", Skillset_size);
+					dataRegistroAux.put("profile", dataArray);
 					jsonResponse.put("data", dataRegistroAux);
 					
 					System.out.println("Enviado para o cliente: " + jsonResponse);
@@ -211,12 +215,12 @@ public class SearchJobServer {
 					JsonArray skillList = (JsonArray) data.get("skill");
 					String experience = (String) data.get("experience");
 					
-					for(JobCandidate jobCandidate : listOfJobCandidates) {
-						String skill = (String) jobCandidate.getSkill();
+					for(SkillCandidate skillCandidate : listOfSkillCandidates) {
+						String skill = (String) skillCandidate.getSkill();
 						for(Object Auxskill : skillList) {
 							String auxSkillString = Auxskill.toString();
 							String skillValue = auxSkillString.replaceAll("\\{skill=", "").replaceAll("\\}", "");
-							String auxJobExperience = jobCandidate.getExperience();
+							String auxJobExperience = skillCandidate.getExperience();
 							Integer auxJobExperience2 = Integer.parseInt(auxJobExperience);
 							Integer auxJobExperience3 = Integer.parseInt(experience);
 							//System.out.println("SKill passada pelo cliente - " + skillValue);
@@ -224,20 +228,21 @@ public class SearchJobServer {
 							//System.out.println("Experience passada pelo cliente - " + auxJobExperience3);
 							//System.out.println("Experience do banco - " + auxJobExperience2);
 							
-							if(skillValue.equals(skill) || auxJobExperience2 <= auxJobExperience3){		
-								if(jobCandidate.getSearchable().equals("YES")) {		
-									JsonObject dataRegistro = new JsonObject();
-									dataRegistro.put("skill", jobCandidate.getSkill());
-									dataRegistro.put("experience", jobCandidate.getExperience());
-									dataRegistro.put("available", jobCandidate.getAvailable());
-									
-									Integer auxSkillset_size = jobCandidate.getId();
-									
-									dataRegistro.put("id", auxSkillset_size.toString());
-									
-									resultsSkillsCandidates.add(dataRegistro);
+							if(skillValue.equals(skill) || auxJobExperience2 <= auxJobExperience3){						
+								JsonObject dataRegistro = new JsonObject();
+								dataRegistro.put("skill", skillCandidate.getSkill());
+								dataRegistro.put("experience", skillCandidate.getExperience());
+								
+								
+								Integer auxSkillset_size = skillCandidate.getId();
+								Integer auxSkillsetperson_size = skillCandidate.getPersonId();
+								
+								dataRegistro.put("id", auxSkillset_size.toString());
+								dataRegistro.put("id_user", auxSkillsetperson_size.toString());
+								
+								resultsSkillsCandidates.add(dataRegistro);
 									//return;
-								}
+								
 								
 							}
 						}
@@ -256,8 +261,8 @@ public class SearchJobServer {
 					
 					
 					JsonObject dataRegistroAux = new JsonObject();
-					dataRegistroAux.put("jobset_size", Skillset_size);
-					dataRegistroAux.put("jobset", dataArray);
+					dataRegistroAux.put("profile_size", Skillset_size);
+					dataRegistroAux.put("profile", dataArray);
 					jsonResponse.put("data", dataRegistroAux);
 					
 					System.out.println("Enviado para o cliente: " + jsonResponse);
@@ -305,13 +310,28 @@ public class SearchJobServer {
 			String line;
 			while((line = br.readLine()) != null) {
 				String[] parts = line.split(",");
-				JobCandidate jobCandidate = new JobCandidate(parts[0], parts[1], Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), parts[4], parts[5]);
+				JobCandidate jobCandidate = new JobCandidate(parts[0], parts[1], Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), parts[3], parts[4]);
 				listOfJobCandidate.add(jobCandidate);
 			}	
 		} catch (FileNotFoundException e) {
 			
 		}
 		return listOfJobCandidate;
+	}
+	
+	private List<SkillCandidate> readSkillCandidateDatabase() throws IOException {
+		List<SkillCandidate> listOfSkillCandidate = new ArrayList<>();
+		try (BufferedReader br = new BufferedReader(new FileReader(DATABASE_FILE_SKILL_CANIDATE))){
+			String line;
+			while((line = br.readLine()) != null) {
+				String[] parts = line.split(",");
+				SkillCandidate skillCandidate = new SkillCandidate(parts[0], parts[1], Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
+				listOfSkillCandidate.add(skillCandidate);
+			}	
+		} catch (FileNotFoundException e) {
+			
+		}
+		return listOfSkillCandidate;
 	}
 	
 	private List<Recruiter> readRecruiterDatabase() throws IOException {
@@ -330,19 +350,4 @@ public class SearchJobServer {
 		return listOfRecruiters;
 	}
 	
-	private List<SkillCandidate> readSkillCandidateDatabase() throws IOException {
-		List<SkillCandidate> listOfSkillCandidate = new ArrayList<>();
-		try (BufferedReader br = new BufferedReader(new FileReader(DATABASE_FILE_SKILL_CANIDATE))){
-			String line;
-			while((line = br.readLine()) != null) {
-				String[] parts = line.split(",");
-				SkillCandidate skillCandidate = new SkillCandidate(parts[0], parts[1], Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
-				listOfSkillCandidate.add(skillCandidate);
-			}	
-		} catch (FileNotFoundException e) {
-			
-		}
-		return listOfSkillCandidate;
-	}
-
 }

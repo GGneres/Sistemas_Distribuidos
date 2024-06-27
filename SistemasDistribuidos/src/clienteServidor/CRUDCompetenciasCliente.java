@@ -26,6 +26,8 @@ public class CRUDCompetenciasCliente {
 		System.out.println("experiencia:");
 		String experience = reader.readLine();
 		
+
+		
 		JsonObject jsonRequest = CreateJson.createRequest("INCLUDE_SKILL");
 		jsonRequest.put("token", token);
 		JsonObject data = new JsonObject();

@@ -200,7 +200,7 @@ public class CRUDCompetenciasServidor {
 					
 					Integer auxSkillset_size = skillCandidate.getId();
 							
-					dataRegistro.put("id", auxSkillset_size.toString());
+					//dataRegistro.put("id", auxSkillset_size.toString());
 					
 					resultsSkillsCandidates.add(dataRegistro);
 					//return;

@@ -53,6 +53,20 @@ public class CRUDClient {
 		JsonObject jsonCreate = (JsonObject) Jsoner.deserialize(response);
 		JsonObject data = (JsonObject) jsonCreate.get("data");
 		token = (String) data.get("token");
+		String status = (String) jsonCreate.get("status");
+		
+		if(status.equals("SUCCESS")) {
+			JsonObject jsonRequest2 = CreateJson.createRequest("GET_COMPANY");
+			jsonRequest2.put("token", token);
+			JsonObject data2 = new JsonObject();
+			jsonRequest2.put("data", data2);
+			
+			out.println(jsonRequest2.toJson());
+			System.out.println("Enviado para o server: " + jsonRequest2.toJson());
+			String response2 = in.readLine();
+			//System.out.println("AQUI - " + jsonRequest);
+			System.out.println(response2);
+		}
 		
 		
 		//auxiliar.aux_setToken(token);

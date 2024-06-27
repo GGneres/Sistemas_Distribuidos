@@ -6,3 +6,8 @@ lana@vida,1,Lana,5
 teste,teste,teste,6
 kaster@g.com,kaster,kaster,7
 hans@hans.com,senha,hans,8
+cnts,123,nome,9
+candidatoteste@teste.com,senha,hans,10
+alex@alex,alexsenha,alex,11
+lana.arthur,1,a,12
+bella,123,Bella,13

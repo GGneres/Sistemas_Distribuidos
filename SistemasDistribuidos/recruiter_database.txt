@@ -6,3 +6,11 @@ lana2,1,lana,Xesque,Dele,5
 email,senha,s,s,s,6
 kaster@.com,kaster,kaster,kaster,kaster,7
 hans2@hans2.com,senha,hans,hans,hans,8
+cntsRecruiter,123,nome,ind,desc,9
+recrutadorteste@teste.com,senha,hans,Games,Diversao,10
+empresaalex@email,senha,nome,industry,descricao,11
+arthur.lana,1,a,a,a,12
+email@alex,senha,alex,industry,descricao,13
+isa,123,Isa,a,a,14
+Eduardo@eduardo.com,12,eduardo,eduardo,eduardo,15
+alexrecruiter,senha,alex,legal,nao,16

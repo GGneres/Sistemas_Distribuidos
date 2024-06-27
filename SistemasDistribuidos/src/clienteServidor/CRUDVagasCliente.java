@@ -24,11 +24,19 @@ public class CRUDVagasCliente {
 		System.out.println("experiencia:");
 		String experience = reader.readLine();
 		
+		System.out.println("Searchable:");
+		String searchable = reader.readLine();
+		
+		System.out.println("avaiable:");
+		String available = reader.readLine();
+		
 		JsonObject jsonRequest = CreateJson.createRequest("INCLUDE_JOB");
 		jsonRequest.put("token", token);
 		JsonObject data = new JsonObject();
 		data.put("skill", skill);
 		data.put("experience", experience);
+		data.put("searchable", searchable);
+		data.put("available", available);
 		jsonRequest.put("data", data);
 		
 		System.out.println("Enviado para o servidor: " + jsonRequest);

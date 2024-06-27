@@ -39,8 +39,12 @@ public class CRUDVagasServidor {
 				JsonObject data = (JsonObject) jsonRequest.get("data");
 				String skill = (String) data.get("skill");
 				String experience = (String) data.get("experience");
+				String searchable = (String) data.get("searchable");
+				String available = (String) data.get("available");
 				
-				if(skill.isEmpty() || experience.isEmpty()) {
+				
+				if(skill.isEmpty() || experience.isEmpty() || searchable.isEmpty() || available.isEmpty()) {
+					System.out.println("AQUI4");
 					JsonObject jsonResponse = CreateJson.createResponse("INCLUDE_JOB", "INVALID_FIELD", "");
 					System.out.println("Mandando para o cliente: " + jsonResponse);
 					out.println(CreateJson.toJsonString(jsonResponse));
@@ -66,8 +70,25 @@ public class CRUDVagasServidor {
 					return;
 				}
 				
+				if(!(searchable.equals("NO") || searchable.equals("YES"))) {
+					System.out.println("AQUI1");
+					JsonObject jsonResponse = CreateJson.createResponse("INCLUDE_JOB", "INVALID_FIELD", "");
+					System.out.println("Mandando para o cliente: " + jsonResponse);
+					out.println(CreateJson.toJsonString(jsonResponse));
+					return;
+				}
+				
+				if(!(available.equals("YES") || available.equals("NO"))) {
+					System.out.println("AQUI2");
+					JsonObject jsonResponse = CreateJson.createResponse("INCLUDE_JOB", "INVALID_FIELD", "");
+					System.out.println("Mandando para o cliente: " + jsonResponse);
+					out.println(CreateJson.toJsonString(jsonResponse));
+					return;
+				}
+				
 				String regex = "[0-9]+";
 				if(!experience.matches(regex)) {
+					System.out.println("AQUI3");
 					JsonObject jsonResponse = CreateJson.createResponse("INCLUDE_JOB", "INVALID_FIELD", "");
 					System.out.println("Mandando para o cliente: " + jsonResponse);
 					out.println(CreateJson.toJsonString(jsonResponse));
@@ -85,7 +106,7 @@ public class CRUDVagasServidor {
 				}
 				
 				
-				JobCandidate createJobCandidate = new JobCandidate(skill, experience, recruterId, id);
+				JobCandidate createJobCandidate = new JobCandidate(skill, experience, recruterId, id, searchable, available);
 				listOfJobCandidates.add(createJobCandidate);
 				writeJobCandidateDatabase(listOfJobCandidates);
 				
@@ -142,6 +163,8 @@ public class CRUDVagasServidor {
 						JsonObject dataRegistro = new JsonObject();
 						dataRegistro.put("skill", jobCandidate.getSkill());
 						dataRegistro.put("experience", jobCandidate.getExperience());
+						dataRegistro.put("searchable", jobCandidate.getSearchable());
+						dataRegistro.put("available", jobCandidate.getAvailable());
 						Integer auxSkillset_size = jobCandidate.getId();
 						
 						dataRegistro.put("id", auxSkillset_size.toString());
@@ -193,7 +216,8 @@ public class CRUDVagasServidor {
 					JsonObject dataRegistro = new JsonObject();
 					dataRegistro.put("skill", jobCandidate.getSkill());
 					dataRegistro.put("experience", jobCandidate.getExperience());
-					
+					dataRegistro.put("searchable", jobCandidate.getSearchable());
+					dataRegistro.put("available", jobCandidate.getAvailable());
 					
 					Integer auxSkillset_size = jobCandidate.getId();
 							
@@ -428,7 +452,7 @@ public class CRUDVagasServidor {
 			String line;
 			while((line = br.readLine()) != null) {
 				String[] parts = line.split(",");
-				JobCandidate jobCandidate = new JobCandidate(parts[0], parts[1], Integer.parseInt(parts[2]), Integer.parseInt(parts[3]));
+				JobCandidate jobCandidate = new JobCandidate(parts[0], parts[1], Integer.parseInt(parts[2]), Integer.parseInt(parts[3]), parts[4], parts[5]);
 				listOfJobCandidate.add(jobCandidate);
 			}	
 		} catch (FileNotFoundException e) {
@@ -455,7 +479,7 @@ public class CRUDVagasServidor {
 	private void writeJobCandidateDatabase(List<JobCandidate> listOfJobCandidates) throws IOException{
 		try (BufferedWriter bw = new BufferedWriter(new FileWriter(DATABASE_FILE_JOB_CANIDATE))){
 			for (JobCandidate jobCandidate : listOfJobCandidates) {
-				String jobString = jobCandidate.getSkill() + "," + jobCandidate.getExperience() + "," + jobCandidate.getPersonId() + "," + jobCandidate.getId();
+				String jobString = jobCandidate.getSkill() + "," + jobCandidate.getExperience() + "," + jobCandidate.getPersonId() + "," + jobCandidate.getId() + "," + jobCandidate.getSearchable() + "," + jobCandidate.getAvailable();
 				bw.write(jobString);
 				bw.newLine();
 			}

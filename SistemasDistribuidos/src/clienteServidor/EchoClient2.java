@@ -8,7 +8,7 @@ import org.xml.sax.helpers.ParserAdapter;
 import com.github.cliftonlabs.json_simple.JsonException;
 
 
-public class EchoClient {
+public class EchoClient2 {
 	public String auxiliar_IP;
 	public int auxiliar_Port;
 	
@@ -65,89 +65,11 @@ public class EchoClient {
         	 
         	 
         	 if(auxClientEmpresaDef == 1) {
-        		 while(switchCase != 7) {
-        			 System.out.println("----- Qual ação vai fazer? -----");
-        			 System.out.println("1 - Login");
-        			 System.out.println("2 - Registrar-se");
-        			 System.out.println("3 - Editar dados");
-        			 System.out.println("4 - Excluir conta");
-        			 System.out.println("5 - Logout");
-        			 System.out.println("6 - Ver dados");
-        			 System.out.println("7 - Sair");
-        			 System.out.println("8 - Criar skill");
-        			 System.out.println("9 - Mostrar skill especifica");
-        			 System.out.println("10 - Mostrar lista de skills");
-        			 System.out.println("11 - Update skill");
-        			 System.out.println("12 - Deletar skill");
-        			 System.out.println("13 - Procurar job");
-        			 
-        			 int opcao;
-        			 opcao = Integer.parseInt(reader.readLine());
-        			 
-        			 switch(opcao) {
-        			 case 1:
-        				 CRUDClient loginClient = new CRUDClient();
-        				 loginClient.loginClient(reader, out, in);
-        				 
-        				 
-        				 break;
-        			 case 2:
-        				 CRUDClient registrarClient = new CRUDClient();
-        				 registrarClient.registarCliente(reader, out, in);
-        				 break;
-        			 case 3:
-        				 CRUDClient atualizarClient = new CRUDClient();
-        				 atualizarClient.atualizarClient(reader, out, in);
-        				 break;
-        			 case 4:
-        				 CRUDClient deletarClient = new CRUDClient();
-        				 deletarClient.deleteClient(reader, out, in);
-        				 break;
-        			 case 5:
-        				 CRUDClient logoutClient = new CRUDClient();
-        				 logoutClient.logoutCliente(in, out);
-        				 //socket.close();
-        				 break;
-        			 case 6:
-        				 //Verificar dados
-        				 CRUDClient verificarDadosClient = new CRUDClient();
-        				 verificarDadosClient.verificarDadosClient(in, out);
-        				 break;
-        			 case 7:
-        				 //sair cliente
-        				 System.out.println("Saindo...");
-        				 defClieEmp.setClienteEmpresa(0);
-        				 switchCase = 7;
-        				 break;	 
-        			 case 8:
-        				 CRUDCompetenciasCliente criarSkill = new CRUDCompetenciasCliente();
-        				 criarSkill.include_skill(reader, out, in);
-        				 break;
-        			 case 9:
-        				 CRUDCompetenciasCliente verUmaSkill = new CRUDCompetenciasCliente();
-        				 verUmaSkill.lookupSkill(reader, out, in);
-        				 break;
-        			 case 10:
-        				 CRUDCompetenciasCliente verTodasSkill = new CRUDCompetenciasCliente();
-        				 verTodasSkill.lookupSkillSet(in, out);
-        				 break;
-        			 case 11:
-        				 CRUDCompetenciasCliente updateSkill = new CRUDCompetenciasCliente();
-        				 updateSkill.updateSkill(reader, out, in);
-        				 break;
-        			 case 12:
-        				 CRUDCompetenciasCliente deletarSkill = new CRUDCompetenciasCliente();
-        				 deletarSkill.deleteSkill(reader, out, in);
-        				 break;
-        			 case 13:
-        				 SearchJobClient searchJobCliente = new SearchJobClient();
-        				 searchJobCliente.SearchJob(reader, out, in);
-        				 break;
-        			 default:
-        				 System.out.println("Opção não reconhecida, escolha uma opção válida!");
-        				 break;
-        			 } //fim do swtich case
-        		 } // fim do laço de cliente
+        		 
+        		 CRUDClient loginClient = new CRUDClient();
+				 loginClient.loginClient(reader, out, in);
+				 
+				 
         		 
         	 }else if(auxClientEmpresaDef == 2){
         		 
